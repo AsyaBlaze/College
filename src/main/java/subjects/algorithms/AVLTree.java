@@ -2,21 +2,29 @@ package subjects.algorithms;
 
 public class AVLTree<T extends Comparable<T>> implements Tree<T> {
 
-    private Node<T> root;
+    private BinaryTree root;
 
-    @Override
-    public Tree<T> insert(T data) {
-        root = insert(data, root);
-        return this;
+    public BinaryTree getRoot() {
+        return root;
     }
 
-    private Node<T> insert(T data, Node<T> node) {
+    public void setRoot(BinaryTree root) {
+        this.root = root;
+    }
+
+    @Override
+    public Tree<BinaryTree> insert(BinaryTree data) {
+        root = insert(data.getKey(), root);
+        return (Tree<BinaryTree>) this;
+    }
+
+    private BinaryTree insert(Integer data, BinaryTree node) {
         if (node == null) {
-            return new Node<>(data);
+            return new BinaryTree(data);
         }
-        if (data.compareTo(node.getData()) < 0) {
+        if (data.compareTo(node.getKey()) < 0) {
             node.setLeftChild(insert(data, node.getLeftChild()));
-        } else if (data.compareTo(node.getData()) > 0) {
+        } else if (data.compareTo(node.getKey()) > 0) {
             node.setRightChild(insert(data, node.getRightChild()));
         } else {
             return node;
@@ -25,18 +33,20 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
         return applyRotation(node);
     }
 
+
+
     @Override
-    public void delete(T data) {
-        root = delete(data, root);
+    public void delete(BinaryTree data) {
+        root = delete(data.getKey(), root);
     }
 
-    private Node<T> delete(T data, Node<T> node) {
+    private BinaryTree delete(Integer data, BinaryTree node) {
         if (node == null) {
             return null;
         }
-        if (data.compareTo(node.getData()) < 0) {
+        if (data.compareTo(node.getKey()) < 0) {
             node.setLeftChild(delete(data, node.getLeftChild()));
-        } else if (data.compareTo(node.getData()) > 0) {
+        } else if (data.compareTo(node.getKey()) > 0) {
             node.setRightChild(delete(data, node.getRightChild()));
         } else {
             if (node.getLeftChild() == null) {
@@ -44,8 +54,8 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
             } else if (node.getRightChild() == null) {
                 return node.getLeftChild();
             }
-            node.setData(getMax(node.getLeftChild()));
-            node.setLeftChild(delete(node.getData(), node.getLeftChild()));
+            node.setKey(getMax(node.getLeftChild()));
+            node.setLeftChild(delete(node.getKey(), node.getLeftChild()));
         }
         updateHeight(node);
         return applyRotation(node);
@@ -56,7 +66,7 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
         traverseInOrder(root);
     }
 
-    private void traverseInOrder(Node<T> node) {
+    private void traverseInOrder(BinaryTree node) {
         if (node != null) {
             traverseInOrder(node.getLeftChild());
             System.out.println(node);
@@ -65,33 +75,33 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
     }
 
     @Override
-    public T getMax() {
+    public int getMax() {
         if (isEmpty()) {
-            return null;
+            return -1;
         }
-            return getMax(root);
+        return getMax(root);
     }
 
-    private T getMax(Node<T> node) {
+    private int getMax(BinaryTree node) {
         if (node.getRightChild() != null) {
             return getMax(node.getRightChild());
         }
-        return node.getData();
+        return node.getKey();
     }
 
     @Override
-    public T getMin() {
+    public int getMin() {
         if (isEmpty()) {
-            return null;
+            return -1;
         }
         return getMin(root);
     }
 
-    private T getMin(Node<T> node) {
+    private int getMin(BinaryTree node) {
         if (node.getLeftChild() != null) {
             return getMin(node.getLeftChild());
         }
-        return node.getData();
+        return node.getKey();
     }
 
     @Override
@@ -99,7 +109,7 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
         return root == null;
     }
 
-    private Node<T> applyRotation(Node<T> node) {
+    private BinaryTree applyRotation(BinaryTree node) {
         int balance = balance(node);
         if (balance > 1) {
             if (balance(node.getLeftChild()) < 0) {
@@ -116,37 +126,55 @@ public class AVLTree<T extends Comparable<T>> implements Tree<T> {
             return node;
     }
 
-    private Node<T> rotateRight(Node<T> node) {
-        Node<T> leftNode = node.getLeftChild();
-        Node<T> centerNode = leftNode.getRightChild();
-        leftNode.setRightChild(node);
-        node.setLeftChild(centerNode);
+    private BinaryTree rotateRight(BinaryTree node) {
+        BinaryTree leftNode = node.getLeftChild();
+        BinaryTree centerNode = leftNode.getRightChild();
+        leftNode.setRightChild(node.getKey());
+        node.setLeftChild(centerNode.getKey());
         updateHeight(node);
         updateHeight(leftNode);
         return leftNode;
     }
 
-    private Node<T> rotateLeft(Node<T> node) {
-        Node<T> rightNode = node.getRightChild();
-        Node<T> centerNode = rightNode.getLeftChild();
-        rightNode.setLeftChild(node);
-        node.setRightChild(centerNode);
+    private BinaryTree rotateLeft(BinaryTree node) {
+        BinaryTree rightNode = node.getRightChild();
+        BinaryTree centerNode = rightNode.getLeftChild();
+        rightNode.setLeftChild(node.getKey());
+        node.setRightChild(centerNode.getKey());
         updateHeight(node);
         updateHeight(rightNode);
         return rightNode;
     }
 
-    private void updateHeight(Node<T> node) {
+    private void updateHeight(BinaryTree node) {
         int maxHeight = Math.max(height(node.getLeftChild()), height(node.getRightChild()));
         node.setHeight(maxHeight + 1);
     }
 
-    private int balance(Node<T> node) {
+    private int balance(BinaryTree node) {
         return node != null ? height(node.getLeftChild()) - height(node.getRightChild()) : 0;
     }
 
-    private int height(Node<T> node) {
+    private int height(BinaryTree node) {
         return node != null ? node.getHeight() : 0;
+    }
+
+    public void printTree() {
+        printTree(root, 0);
+    }
+
+    private void printTree(BinaryTree node, int indent) {
+        if (node == null) return;
+
+        printTree(node.getRightChild(), indent + 4);
+
+        for (int i = 0; i < indent; i++) {
+            System.out.print(" ");
+        }
+
+        System.out.println(node.getKey());
+
+        printTree(node.getLeftChild(), indent + 4);
     }
 
 }

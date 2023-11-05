@@ -1,15 +1,15 @@
 package subjects.algorithms;
 
 public interface Tree<T extends Comparable<T>> {
-    Tree<T> insert(T data);
+    Tree<BinaryTree> insert(BinaryTree data);
 
-    void delete(T data);
+    void delete(BinaryTree data);
 
     void traverse();
 
-    T getMax();
+    int getMax();
 
-    T getMin();
+    int getMin();
 
     boolean isEmpty();
 

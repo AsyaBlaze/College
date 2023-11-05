@@ -1,5 +1,6 @@
 package subjects.testing;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,24 +13,29 @@ import java.util.List;
 public class CheckPoint2 {
     public static void main(String[] args) {
         try {
+            // Переводим всех записанных пользователей из файла в объекты класса User
             Object obj = new JSONParser().parse(new FileReader("C:\\Users\\Анастасия\\Documents\\Test\\users.json"));
             JSONArray jsonArray = (JSONArray) obj;
-            List<User> users = new ArrayList<>();
+            List<User1> user1s = new ArrayList<>();
             for (Object obj1 : jsonArray) {
-                users.add(parseUser((JSONObject) obj1));
+                user1s.add(parseUser((JSONObject) obj1));
             }
+            // Переводим все записанные книги из файла в объекты класса Book
             List<Book> books = parseBooks("C:\\Users\\Анастасия\\Documents\\Test\\books.csv");
             int index = books.size() - 1;
             int i = 0;
+            // Раздаем книги пользователям
             while (index != 0) {
-                if (i == users.size()) {
+                if (i == user1s.size()) {
                     i = 0;
                 }
-                users.get(i).getBooks().add(books.get(index));
+                user1s.get(i).getBooks().add(books.get(index));
                 i++;
                 index--;
             }
-            // TODO перевести users в JSON
+            // Создаем файл json и записываем в него пользователей с их книгами
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.writeValue(new File("result.json"), user1s);
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
@@ -40,14 +46,14 @@ public class CheckPoint2 {
      * Переносит объект из jsonObject в объект класса User
      * @return полученный объект User
      */
-    private static User parseUser(JSONObject jsonObject) {
-        User user = new User();
-        user.setName((String) jsonObject.get("name"));
-        user.setAge((long) jsonObject.get("age"));
+    private static User1 parseUser(JSONObject jsonObject) {
+        User1 user1 = new User1();
+        user1.setName((String) jsonObject.get("name"));
+        user1.setAge((long) jsonObject.get("age"));
         String gender = (String) jsonObject.get("gender");
-        user.setGender(gender.equals("male") ? Gender.male : Gender.female);
-        user.setAddress((String) jsonObject.get("address"));
-        return user;
+        user1.setGender(gender.equals("male") ? Gender.male : Gender.female);
+        user1.setAddress((String) jsonObject.get("address"));
+        return user1;
     }
 
     /**
@@ -161,17 +167,17 @@ class Book {
     }
 }
 
-class User {
+class User1 {
     private String name;
     private Gender gender;
     private String address;
     private long age;
     private List<Book> books = new ArrayList<>();
 
-    public User() {
+    public User1() {
     }
 
-    public User(String name, Gender gender, String address, long age, List<Book> books) {
+    public User1(String name, Gender gender, String address, long age, List<Book> books) {
         this.name = name;
         this.gender = gender;
         this.address = address;
