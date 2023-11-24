@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AVLTreeConverter {
-
+//
     public AVLTree convertBinaryTreeToAVL(BinaryTree binaryTree) {
         List<BinaryTree> sortedList = new ArrayList<>();
         inOrderTraverse(binaryTree, sortedList);
