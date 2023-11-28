@@ -1,30 +1,23 @@
 package subjects.testing;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpResponse;
-import org.json.simple.JSONObject;
-
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpRequest;
-import java.util.Arrays;
-import java.util.Date;
+import java.net.http.HttpResponse;
 
 public class CheckPoint3 {
     public static void main(String[] args) throws IOException, InterruptedException {
         System.out.println("\nДобавляем пользователя...");
-        String url = "/user";
+        String url = "https://petstore.swagger.io/v2/user";
         User user = new User(3, "kiko", "Janin", "Kirova", "kiko567@numa.com", "lipetsk1997");
         makePostOrPutRequest(url, new ObjectMapper().writeValueAsString(user), "POST");
 
         System.out.println("\nПроверяем добавление пользователя...");
-        url = "/user/kiko";
+        url = "https://petstore.swagger.io/v2/user/kiko";
         makeGetRequest(url);
 
         System.out.println("\nОбновляем пароль...");
@@ -42,12 +35,12 @@ public class CheckPoint3 {
 
         System.out.println("\n\n----Работа с заказами----");
         System.out.println("\nДобавляем заказ...");
-        url = "/store/order";
+        url = "https://petstore.swagger.io/v2/store/order";
         Order order = new Order(5, 21, 1, "2023-11-05T14:25:18.747Z", Status.approved, false);
         makePostOrPutRequest(url, new ObjectMapper().writeValueAsString(order), "POST");
 
         System.out.println("\nПроверяем добавление заказа...");
-        url = "/store/order/5";
+        url = "https://petstore.swagger.io/v2/store/order/5";
         makeGetRequest(url);
 
         System.out.println("\nУдаляем заказ");
@@ -57,12 +50,12 @@ public class CheckPoint3 {
         makeGetRequest(url);
 
         System.out.println("\nДелаем инвентаризацию...");
-        url = "/store/inventory";
+        url = "https://petstore.swagger.io/v2/store/inventory";
         makeGetRequest(url);
     }
 
-    private static void makeDeleteRequest(String url) throws IOException {
-        URL uri = new URL("https://petstore.swagger.io/v2" + url);
+    public static void makeDeleteRequest(String url) throws IOException {
+        URL uri = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) uri.openConnection();
         connection.setRequestMethod("DELETE");
         connection.setRequestProperty("accept", "application/json");
@@ -70,19 +63,19 @@ public class CheckPoint3 {
         System.out.println("Delete Response Code for " + url + ": " + connection.getResponseCode());
     }
 
-    private static void makeGetRequest(String url) throws IOException, InterruptedException {
-        String site = "https://petstore.swagger.io/v2" + url;
+    public static HttpResponse<String> makeGetRequest(String url) throws IOException, InterruptedException {
+        String site = url;
         java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(site))
                 .GET()
                 .build();
-        System.out.print("Response for GET-request " + url + ": ");
-        System.out.println(client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString()).body());
+
+        return client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
     }
 
-    private static void makePostOrPutRequest(String url, String body, String requestType) throws IOException, InterruptedException {
-        URL uri = new URL("https://petstore.swagger.io/v2" + url);
+    public static void makePostOrPutRequest(String url, String body, String requestType) throws IOException, InterruptedException {
+        URL uri = new URL(url);
         HttpURLConnection connection = (HttpURLConnection) uri.openConnection();
         connection.setRequestMethod(requestType);
         connection.setRequestProperty("accept", "application/json");

@@ -1,8 +1,10 @@
 package subjects.java;
-
 public class User {
+    @Value(key = "id")
     private int id;
+    @Value(key = "name")
     private String username;
+    @Value(key = "password")
     private String password;
 
     public User() {
